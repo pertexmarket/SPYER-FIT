@@ -187,15 +187,11 @@
 <div class="social">
   <h4>تابعنا على مواقع التواصل 🕷️</h4>
   <div class="social-btns">
-    <a class="soc" href="[https://www.instagram.com/luna__pack?xtok=MzF1ZDh3cGk5bWt0](https://www.instagram.com/spyer_fit?evlk=N3BhMzM3MnY4amZk)" target="_blank" rel="noopener noreferrer">
+    <a class="soc" href="https://www.instagram.com/spyer_fit?evlk=N3BhMzM3MnY4amZk" target="_blank" rel="noopener noreferrer">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm5.3-3.1a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>
       انستغرام
     </a>
-    <a class="soc" href="[https://www.facebook.com/share/1K33qXmHeA/](https://www.instagram.com/spyer_fit?evlk=N3BhMzM3MnY4amZk)" target="_blank" rel="noopener noreferrer">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.2h-3.1V7.9c0-.9.3-1.5 1.6-1.5h1.6V3.5c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.3H7.6V13h2.7v8h3.2z"/></svg>
-      فيسبوك
-    </a>
-    <a class="soc" href="[https://www.tiktok.com/@luna___pack?_r=1&amp;_t=ZS-9ApjTwB0iwS](https://tiktok.com/@spyer_fit)" target="_blank" rel="noopener noreferrer">
+    <a class="soc" href="https://www.tiktok.com/@spyer_fit" target="_blank" rel="noopener noreferrer">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 3h-3.2v12.2a2.7 2.7 0 1 1-2.7-2.7c.3 0 .5 0 .8.1V9.3a5.9 5.9 0 1 0 5.1 5.9V8.6a7.4 7.4 0 0 0 4.3 1.4V6.8A4.3 4.3 0 0 1 16.6 3z"/></svg>
       تيك توك
     </a>
@@ -258,6 +254,28 @@ function calcSize(h, w) {
 }
 function taille(s) { return (s === "S" || s === "M") ? "taille1" : "taille2"; }
 
+/* يجرّب عدة صيغ لاسم الصورة (حروف كبيرة/صغيرة وامتدادات مختلفة) */
+function imgCandidates(name) {
+  var base = name.replace(/\.[^.]+$/, '');
+  var list = [name];
+  ['png', 'Png', 'PNG', 'jpg', 'jpeg', 'JPG', 'webp'].forEach(function(e) {
+    var f = base + '.' + e;
+    if (list.indexOf(f) === -1) list.push(f);
+  });
+  return list;
+}
+function nextImg(el, name) {
+  var list = imgCandidates(name);
+  var i = (+el.getAttribute('data-i')) + 1;
+  if (i < list.length) {
+    el.setAttribute('data-i', i);
+    el.src = encodeURI(list[i]);
+  } else {
+    el.onerror = null;
+    el.parentElement.innerHTML = 'صورة المنتج';
+  }
+}
+
 function renderProducts() {
   var html = '';
   PRODUCTS.forEach(function(p) {
@@ -266,7 +284,7 @@ function renderProducts() {
       return '<button type="button" class="chip' + (s === sel[p.id].size ? ' active' : '') + '" data-s="' + s + '" onclick="chooseSize(' + p.id + ',\'' + s + '\')">' + s + '</button>';
     }).join('');
     html += '<div class="card" id="card-' + p.id + '">' +
-      '<div class="img-wrap"><img src="' + p.img + '" alt="' + p.name + '" onerror="this.parentElement.innerHTML=\'صورة المنتج\'"></div>' +
+      '<div class="img-wrap"><img src="' + encodeURI(imgCandidates(p.img)[0]) + '" data-i="0" alt="' + p.name + '" onerror="nextImg(this,\'' + p.img + '\')"></div>' +
       '<div class="p-name">' + p.name + '</div>' +
       '<div class="p-price">' + p.price + ' دج</div>' +
       '<div class="qty"><button onclick="changeQty(' + p.id + ',-1)" aria-label="إنقاص">−</button><span id="qty-' + p.id + '">0</span><button onclick="changeQty(' + p.id + ',1)" aria-label="زيادة">+</button></div>' +
