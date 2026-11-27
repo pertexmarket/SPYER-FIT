@@ -120,6 +120,16 @@
   .soc svg { width:20px; height:20px; fill:currentColor; }
   .soc:hover { transform:translateY(-2px); background:var(--red); border-color:var(--red); }
 
+  /* ===== Spider & web ===== */
+  .web { position:absolute; top:0; right:0; width:150px; height:150px; opacity:0; pointer-events:none; animation:fadeIn .8s ease 2.8s forwards; }
+  .spider-wrap { position:fixed; top:0; right:24px; z-index:40; pointer-events:none; }
+  .thread { width:2px; height:0; margin:0 auto; background:linear-gradient(#6b6f76,#c4c7cc); transition:height 2.6s cubic-bezier(.3,.7,.3,1); }
+  .thread.follow { transition:height .35s ease-out; }
+  .spider-wrap svg { display:block; width:44px; margin:-3px auto 0; opacity:0; transform-origin:50% 0; filter:drop-shadow(0 0 8px rgba(214,42,42,.55)); animation:fadeIn .4s ease 3s forwards, sway 3.6s ease-in-out 6s infinite; }
+  @keyframes fadeIn { to { opacity:1; } }
+  @keyframes sway { 0%,100% { transform:rotate(-5deg); } 50% { transform:rotate(5deg); } }
+  @media (prefers-reduced-motion: reduce) { .web, .spider-wrap svg { animation:none; opacity:1; } .thread, .thread.follow { transition:none; } }
+
   @media (prefers-reduced-motion: reduce) { #intro img { animation-duration:.01s; animation-delay:0s; } }
 </style>
 </head>
@@ -128,6 +138,25 @@
 <div id="intro" onclick="closeIntro()"><img src="logo.jpg" alt="SPYER"></div>
 
 <div class="hero">
+  <svg class="web" viewBox="0 0 150 150" fill="none" stroke="#8a8e95" stroke-width="1" aria-hidden="true">
+    <g opacity=".55">
+      <path d="M150 0L0 0M150 0L5 0M150 0L16 55.5M150 0L47.5 102.5M150 0L94.5 134M150 0L150 150"/>
+      <path d="M150 38A38 38 0 0 1 112 0M150 76A76 76 0 0 1 74 0M150 112A112 112 0 0 1 38 0M150 146A146 146 0 0 1 4 0"/>
+    </g>
+  </svg>
+  <div class="spider-wrap" aria-hidden="true">
+    <div class="thread"></div>
+    <svg viewBox="0 0 64 64" fill="none">
+      <g stroke="#d62a2a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M26 26L12 14L6 24M25 29L8 28L4 40M25 34L8 42L8 54M26 38L14 54L18 62"/>
+        <path d="M38 26L52 14L58 24M39 29L56 28L60 40M39 34L56 42L56 54M38 38L50 54L46 62"/>
+      </g>
+      <ellipse cx="32" cy="40" rx="10" ry="13" fill="#d62a2a"/>
+      <circle cx="32" cy="24" r="6.5" fill="#d62a2a"/>
+      <path d="M28 35L36 35L32 40ZM28 47L36 47L32 42Z" fill="#f4f4f5"/>
+      <circle cx="29.5" cy="23" r="1.4" fill="#f4f4f5"/><circle cx="34.5" cy="23" r="1.4" fill="#f4f4f5"/>
+    </svg>
+  </div>
   <div class="logo-wrap"><img src="logo.jpg" alt="SPYER Clothing Brand"></div>
   <span class="tag">🕷️ NEW COLLECTION — HOODIES</span>
   <p>هوديز بتصميم قوي وجودة عالية — اختر مقاسك بدقة</p>
@@ -500,6 +529,21 @@ function sendOrder() {
     btn.disabled = false; btn.innerText = 'تأكيد الطلب الآن';
   });
 }
+
+/* العنكبوت ينزل مع التمرير على طول الصفحة */
+(function() {
+  var thread = document.querySelector('.thread');
+  function place() {
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    var p = docH > 0 ? Math.min(1, Math.max(0, window.scrollY / docH)) : 0;
+    var maxLen = Math.max(110, window.innerHeight - 190);
+    thread.style.height = (90 + p * (maxLen - 90)) + 'px';
+  }
+  setTimeout(function() { place(); }, 3000);
+  setTimeout(function() { thread.classList.add('follow'); }, 5800);
+  window.addEventListener('scroll', function() { if (thread.style.height) place(); }, { passive: true });
+  window.addEventListener('resize', function() { if (thread.style.height) place(); });
+})();
 </script>
 </body>
 </html>
